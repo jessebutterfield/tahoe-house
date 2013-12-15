@@ -1,0 +1,9 @@
+.current {
+background-color:#b0c4de;
+}
+td {
+vertical-align:text-top;
+border-style:solid;
+height:5em;
+min-width:8em;
+}
