@@ -28,7 +28,8 @@ def postLogin(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            if(not hasattr(user,'userattributes')):
+            ua,created = UserAttributes.objects.get_or_create(user=user)
+            if(created):
                 return HttpResponseRedirect(reverse('booktahoe.views.updateInfo'))
             else:
                 if(n):
@@ -147,7 +148,7 @@ def booknight(request,form,n):
     if(coming):
         a, _ = Attending.objects.get_or_create(member=user,night=n)
         a.plusOne=plusOne
-        if(plusOne and hasattr(user, 'userattributes') and user.userattributes.sigMember):
+        if(plusOne and user.userattributes.sigMember):
             b, _ = Attending.objects.get_or_create(member=user.userattributes.sigMember,night=n)
             b.plusOne = plusOne
             b.save()
@@ -162,7 +163,7 @@ def booknight(request,form,n):
         a.save()
     else:
         Attending.objects.filter(night=n,member=user).delete()
-        if(plusOne and hasattr(user, 'userattributes') and user.userattributes.sigMember):
+        if(plusOne and user.userattributes.sigMember):
             Attending.objects.filter(night=n,member=user.userattributes.sigMember).delete()  
             
 
