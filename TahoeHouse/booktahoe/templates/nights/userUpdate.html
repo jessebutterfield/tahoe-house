@@ -1,0 +1,9 @@
+<p> Update your info. You will be identified by username on all other pages, so choose something 
+understandable. Selecting your significant other helps with room assignments and will allow you
+to easily reserve nights for the both of you at once.
+</p>
+<form action="/nights/saveInfo/" method="post">
+{% csrf_token %}
+ {{ form.as_p }}
+ <input type="submit" value="Save" />
+</form>

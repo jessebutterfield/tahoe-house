@@ -1,20 +1,22 @@
 <h1>{{ datename }}</h1>
+{% if form %}
 <form action="/nights/{{ night.id }}/book/" method="post">
 {% csrf_token %}
  {{ form.as_p }}
  <p> One guest per line </p>
  <input type="submit" value="Update" />
 </form>
+{% endif %}
 <h2> Members </h2>
 <ul>
-{% for member in night.members.all %}
-    <li>{{ member.username }}</li>
+{% for a in night.attendees.all %}
+    <li>{{ a.username }}</li>
 {% endfor %}
 </ul>
 <h2> Guests </h2>
 <ul>
-{% for guest in night.guest_set.all %}
-    <li>{{ guest.name }}</li>
+{% for guest in guestList %}
+	<li>{{ guest }}</li>
 {% endfor %}
 </ul>
 <h2> Comments </h2>
@@ -22,9 +24,11 @@
     <p>{{comment.poster.username}} - {{comment.text}}</p>
 {% endfor %}
 
+{% if form %}
 <form action="/nights/{{ night.id }}/comment/" method="post">
 {% csrf_token %}
 <textarea rows="6" cols="60" name="commentText">
 </textarea>
 <input type="submit" value="Comment" />
 </form>
+{% endif %}

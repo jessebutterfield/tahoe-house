@@ -1,5 +1,13 @@
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static "booktahoe/month.css" %}" />
+{% if user.username %}
+<p> Welcome {{user.username}} <a href = "{% url "django.contrib.auth.views.logout" %}" > Logout </a> </p>
+{% else %}
+<a href = "{% url "django.contrib.auth.views.login" %}" > Login </a></br>
+{% endif %}
+
+<a href= "{% url "booktahoe.views.newMonth" year month "prev" %}">&lt;&lt; Prev</a>
+<a href= "{% url "booktahoe.views.newMonth" year month "next" %}">Next &gt;&gt;</a>
 <h4>{{ mname }} {{ year }}</h4>
 
 <div class="month">
@@ -17,7 +25,7 @@
 
     {% for week in month_days %}
         <tr>
-        {% for day, entries, current in week %}
+        {% for day, entries, current, guests, parking in week %}
 
             <!-- TD style: empty | day | current; onClick handler and highlight  -->
             <td class= {% if day == 0 %}"empty"{% endif %}
@@ -29,12 +37,16 @@
             {% if day != 0 %}
                 {{ day }}
                 {% for entry in entries %}
+                	{% if entry.attendees.count > 0 or entry.comment_set.count > 0 %}
                     <br />
-                    <div title = "{% for member in entry.members.all %}{{member.username}}&#10{% endfor %}">
-					{{ entry.members.count }} members </div>
-                    {{ entry.guest_set.count}} guests
+                    <div title = "{% for a in entry.attendees.all %}{{a.username}}&#10{% endfor %}">
+					{{ entry.attendees.count }} members </div>
+                    {{ guests }} guests
+                    <br />
+                    {{ parking }} cars
                     <br />
                     {{ entry.comment_set.count }} comments
+               		{% endif %}
                 {% endfor %}
             {% endif %}
             </td>
