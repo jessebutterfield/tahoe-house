@@ -84,6 +84,7 @@ def detail(request, year, month, day):
     year, month, day = int(year), int(month), int(day)
     d = date(year,month,day)
     n,_ = Night.objects.get_or_create(night = d)
+    attends = Attending.objects.filter(night = n)
     guestList = []
     for g in Guest.objects.filter(attend__night=n):
         #TODO: this violates good practices
@@ -106,7 +107,7 @@ def detail(request, year, month, day):
     else:
         form = False
     return render_to_response('nights/detail.html', 
-                              {'night': n,'datename':datename,'form':form, 'guestList':guestList},
+                              {'year':year,'month':month,'attends': attends, 'night': n,'datename':datename,'form':form, 'guestList':guestList},
                               context_instance=RequestContext(request))
     
 def my_form_factory(initComing=False,initNights=1,initGuests='',initParking=0,sigOther=False):
@@ -200,6 +201,7 @@ def month(request, year, month):
 
     # init variables
     cal = calendar.Calendar()
+    cal.setfirstweekday(6)
     month_days = cal.itermonthdays(year, month)
     lst = [[]]
     week = 0

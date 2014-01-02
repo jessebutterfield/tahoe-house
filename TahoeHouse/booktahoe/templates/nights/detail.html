@@ -1,4 +1,5 @@
 <h1>{{ datename }}</h1>
+<a href="{% url "booktahoe.views.month" year month %}"> Back to calendar </a>
 {% if form %}
 <form action="/nights/{{ night.id }}/book/" method="post">
 {% csrf_token %}
@@ -7,13 +8,18 @@
  <input type="submit" value="Update" />
 </form>
 {% endif %}
-<h2> Members </h2>
+<h2> Members ({{night.attendees.count}})</h2>
 <ul>
-{% for a in night.attendees.all %}
-    <li>{{ a.username }}</li>
+{% for a in attends %}
+    <li>{{ a.member.username }}
+    {% if a.parkingRequests > 0 %}
+    + {{a.parkingRequests}} car
+    {% endif %}
+    </li>
 {% endfor %}
 </ul>
-<h2> Guests </h2>
+
+<h2> Guests ({{guestList|length}})</h2>
 <ul>
 {% for guest in guestList %}
 	<li>{{ guest }}</li>

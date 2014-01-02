@@ -14,13 +14,13 @@
     <table>
 
     <tr>
-        <td class="empty">Mon</td>
-        <td class="empty">Tue</td>
-        <td class="empty">Wed</td>
-        <td class="empty">Thu</td>
-        <td class="empty">Fri</td>
-        <td class="empty">Sat</td>
-        <td class="empty">Sun</td>
+    	<td class="datenum">Sun</td>
+        <td class="datenum">Mon</td>
+        <td class="datenum">Tue</td>
+        <td class="datenum">Wed</td>
+        <td class="datenum">Thu</td>
+        <td class="datenum">Fri</td>
+        <td class="datenum">Sat</td>
     </tr>
 
     {% for week in month_days %}
@@ -35,10 +35,9 @@
 
             <!-- Day number and entry snippets -->
             {% if day != 0 %}
-                {{ day }}
+                <div class="datenum"> {{ day }} </div>
                 {% for entry in entries %}
                 	{% if entry.attendees.count > 0 or entry.comment_set.count > 0 %}
-                    <br />
                     <div title = "{% for a in entry.attendees.all %}{{a.username}}&#10{% endfor %}">
 					{{ entry.attendees.count }} members </div>
                     {{ guests }} guests
@@ -48,6 +47,8 @@
                     {{ entry.comment_set.count }} comments
                		{% endif %}
                 {% endfor %}
+            {% else %}
+            <p> </p>
             {% endif %}
             </td>
         {% endfor %}

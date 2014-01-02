@@ -32,7 +32,7 @@ class Comment(models.Model):
     poster = models.ForeignKey(User)
         
     def __unicode__(self):  # Python 3: def __str__(self):
-        return self.name
+        return self.poster.username + '-' + self.text
     
 class UserAttributes(models.Model):
     user = models.OneToOneField(User)
