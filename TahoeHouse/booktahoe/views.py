@@ -208,7 +208,7 @@ def month(request, year, month):
 
     # make month lists containing list of days for each week
     # each day tuple will contain list of entries and 'current' indicator
-    today = datetime.today().date()
+    today = datetime.now()
     for day in month_days:
         entries = current = False   # are there entries for this day; current day?
         guests = 0

@@ -22,7 +22,7 @@ SECRET_KEY = '#jgdj(q^wysqk64m47r8-*_-74!i^i$wg$72%pc)fu-(m01#7r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-USE_TZ = False
+USE_TZ = True
 
 TEMPLATE_DEBUG = True
 
@@ -72,7 +72,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Los_Angeles'
 
 USE_I18N = True
 
