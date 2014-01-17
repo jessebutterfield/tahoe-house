@@ -1,4 +1,5 @@
 from django.template import Context, loader, RequestContext
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
@@ -79,7 +80,9 @@ def info_form_factory(user):
                                           queryset=User.objects.all(), initial=ini,required=False)           
     return UserInfoForm
 
-def detail(request, year, month, day):
+def detail(request, year, month, day, commentId = False):
+    if(commentId):
+        commentId = int(commentId)
     datename = year + "-" + month + "-" + day
     year, month, day = int(year), int(month), int(day)
     d = date(year,month,day)
@@ -107,7 +110,9 @@ def detail(request, year, month, day):
     else:
         form = False
     return render_to_response('nights/detail.html', 
-                              {'year':year,'month':month,'attends': attends, 'night': n,'datename':datename,'form':form, 'guestList':guestList},
+                              {'year':year,'month':month,'day':day,'attends': attends, 'night': n,
+                               'datename':datename,'form':form, 'guestList':guestList,
+                               'commentId':commentId},
                               context_instance=RequestContext(request))
     
 def my_form_factory(initComing=False,initNights=1,initGuests='',initParking=0,sigOther=False):
@@ -166,8 +171,34 @@ def booknight(request,form,n):
         Attending.objects.filter(night=n,member=user).delete()
         if(plusOne and user.userattributes.sigMember):
             Attending.objects.filter(night=n,member=user.userattributes.sigMember).delete()  
-            
 
+def deleteComment(request,comment_id):
+    if(request.user.is_authenticated()):
+        return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
+    try:
+        c = Comment.objects.get(pk=comment_id)
+        d = c.night.night
+        if(c.poster.id == request.user.id):
+            c.delete()
+        return HttpResponseRedirect(reverse('booktahoe.views.detail', args=(d.year,d.month,d.day,))+'#c')   
+    except ObjectDoesNotExist:
+        return currentMonth(request)        
+
+def editComment(request,comment_id):
+    if( not request.user.is_authenticated()):
+        return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
+    try:
+        c = Comment.objects.get(pk=comment_id)
+        d = c.night.night
+        if(c.poster.id == request.user.id):
+            text = request.POST['commentText']
+            c.text = text
+            c.save()
+        return HttpResponseRedirect(reverse('booktahoe.views.detail', 
+                                            args=(d.year,d.month,d.day))+'#c'+str(c.id))   
+    except ObjectDoesNotExist:
+        return currentMonth(request)   
+    
 def comment(request,night_id):
     if(request.user.is_authenticated()):
         night = get_object_or_404(Night, pk=night_id)
@@ -175,7 +206,8 @@ def comment(request,night_id):
         com = Comment(night=night,poster=request.user,text=text)#,created=datetime.now())
         com.save()
         d = night.night
-        return HttpResponseRedirect(reverse('booktahoe.views.detail', args=(d.year,d.month,d.day,)))
+        return HttpResponseRedirect(reverse('booktahoe.views.detail', 
+                                            args=(d.year,d.month,d.day))+'#c'+str(com.id))
     else:
         return HttpResponseRedirect(reverse('booktahoe.views.index'))
 

@@ -25,13 +25,29 @@
 	<li>{{ guest }}</li>
 {% endfor %}
 </ul>
-<h2> Comments </h2>
+<h2 id="c"> Comments </h2>
 {% for comment in night.comment_set.all %}
-    <p>{{comment.poster.username}} - {{comment.text}}</p>
-{% endfor %}
 
+    {% if comment.id == commentId %}
+    	<form id="c{{comment.id}}" action="{% url "booktahoe.views.editComment" commentId %}" method="post">
+		{% csrf_token %}
+		<textarea rows="6" cols="60" name="commentText">{{comment.text}}</textarea>
+		<input type="submit" value="Update" />
+		</form>
+    {% else %}
+    <p id="c{{comment.id}}">
+    	{{comment.poster.username}} - {{comment.text}}
+    	{% if comment.poster == user %}
+    	<a href="{% url "booktahoe.views.detail" year month day comment.id %}#c{{comment.id}}">edit</a>
+    	<a href="{% url "booktahoe.views.deleteComment" comment.id %}#c">delete</a>
+    	    </p>
+    {% endif %}
+
+    {% endif %}
+{% endfor %}
+</br>
 {% if form %}
-<form action="/nights/{{ night.id }}/comment/" method="post">
+<form action="{% url "booktahoe.views.comment" night.id %}" method="post">
 {% csrf_token %}
 <textarea rows="6" cols="60" name="commentText">
 </textarea>
