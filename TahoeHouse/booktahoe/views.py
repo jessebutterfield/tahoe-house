@@ -173,7 +173,7 @@ def booknight(request,form,n):
             Attending.objects.filter(night=n,member=user.userattributes.sigMember).delete()  
 
 def deleteComment(request,comment_id):
-    if(request.user.is_authenticated()):
+    if(not request.user.is_authenticated()):
         return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
     try:
         c = Comment.objects.get(pk=comment_id)
