@@ -52,7 +52,6 @@ def saveInfo(request):
     formClass = info_form_factory(user)
     form = formClass(request.POST)
     if(form.is_valid()):
-        print form
         user.username = form.cleaned_data['username']
         p = form.cleaned_data['password']
         if(p):
