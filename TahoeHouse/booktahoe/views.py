@@ -40,9 +40,10 @@ def postLogin(request):
         HttpResponse("Form was valid")
     return HttpResponse("Form was invalid")
 
-def updateInfo(request):
-    formClass = info_form_factory(request.user)
-    form = formClass()
+def updateInfo(request, form = None):
+    if(not form):
+        formClass = info_form_factory(request.user)
+        form = formClass()
     return render_to_response('nights/userUpdate.html', {'form':form},
                               context_instance=RequestContext(request))
     
@@ -51,6 +52,7 @@ def saveInfo(request):
     formClass = info_form_factory(user)
     form = formClass(request.POST)
     if(form.is_valid()):
+        print form
         user.username = form.cleaned_data['username']
         p = form.cleaned_data['password']
         if(p):
@@ -62,11 +64,11 @@ def saveInfo(request):
         ua.save()
         return HttpResponseRedirect(reverse('booktahoe.views.currentMonth'))
     else:
-        return HttpResponseRedirect(reverse('booktahoe.views.updateInfo'))
+        return updateInfo(request, form)
 
 def info_form_factory(user):
     class UserInfoForm(forms.Form):
-        choices = User.objects.all()
+        choices = User.objects.filter(is_active=True)
         choiceSet = [(-1,'Not Dating a Member')]
         choiceSet.extend(choices.values('id','username'))
         username = forms.CharField(initial=user.username)
@@ -77,7 +79,12 @@ def info_form_factory(user):
         else:
             ini = None
         sigOther = forms.ModelChoiceField(label='Significant Other',empty_label="Not Dating a Member",
-                                          queryset=User.objects.all(), initial=ini,required=False)           
+                                          queryset=User.objects.all(), initial=ini,required=False)
+        def clean(self):
+            cleaned_data = super(UserInfoForm, self).clean()
+            if(cleaned_data.get("password") != cleaned_data.get("check")):
+                raise forms.ValidationError('Passwords do not match')
+            return cleaned_data
     return UserInfoForm
 
 def detail(request, year, month, day, commentId = False):

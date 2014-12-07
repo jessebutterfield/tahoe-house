@@ -1,7 +1,7 @@
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static "booktahoe/month.css" %}" />
 {% if user.username %}
-<p> Welcome {{user.username}} <a href = "/logout/" > Logout </a> </p>
+<p> Welcome {{user.username}} <a href = "/logout/" > Logout </a>  <a href = "/userUpdate/" > Update user info </a> </p>
 {% else %}
 <a href = "{% url "django.contrib.auth.views.login" %}" > Login </a></br>
 {% endif %}
