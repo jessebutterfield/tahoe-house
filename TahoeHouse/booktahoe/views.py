@@ -67,9 +67,6 @@ def saveInfo(request):
 
 def info_form_factory(user):
     class UserInfoForm(forms.Form):
-        choices = User.objects.filter(is_active=True)
-        choiceSet = [(-1,'Not Dating a Member')]
-        choiceSet.extend(choices.values('id','username'))
         username = forms.CharField(initial=user.username)
         password = forms.CharField(label='New Password',widget=forms.PasswordInput,required=False)
         check = forms.CharField(label='Retype Password',widget=forms.PasswordInput,required=False)
@@ -78,7 +75,7 @@ def info_form_factory(user):
         else:
             ini = None
         sigOther = forms.ModelChoiceField(label='Significant Other',empty_label="Not Dating a Member",
-                                          queryset=User.objects.all(), initial=ini,required=False)
+                                          queryset=User.objects.filter(is_active=True), initial=ini,required=False)
         def clean(self):
             cleaned_data = super(UserInfoForm, self).clean()
             if(cleaned_data.get("password") != cleaned_data.get("check")):
